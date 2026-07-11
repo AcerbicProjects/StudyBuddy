@@ -10,26 +10,38 @@ export const COLORS = {
     secondary: '#8B5CF6',
     accent: '#22C55E',
     background: '#F8FAFC',
-    card: '#FFFFFF',
+    backgroundGradient: ['#FFFFFF', '#EEF2F6', '#E0E7FF'] as [string, string, string], // White -> Light Blue -> Indigo
+    card: 'rgba(255, 255, 255, 0.8)', // Glassmorphism base
     text: '#0F172A',
     textMuted: '#64748B',
-    border: '#E2E8F0',
-    inputBg: '#F1F5F9',
+    border: 'rgba(226, 232, 240, 0.8)',
+    inputBg: 'rgba(241, 245, 249, 0.6)',
     error: '#EF4444',
     success: '#22C55E',
+    glows: {
+      indigo: 'rgba(79, 70, 229, 0.15)',
+      purple: 'rgba(139, 92, 246, 0.15)',
+      cyan: 'rgba(6, 182, 212, 0.15)',
+    },
   },
   dark: {
     primary: '#4F46E5',
     secondary: '#8B5CF6',
     accent: '#22C55E',
-    background: '#0F172A',
-    card: '#1E293B',
+    background: '#0B1120', // Deep Navy
+    backgroundGradient: ['#0B1120', '#0F172A', '#1E1B4B'] as [string, string, string],
+    card: 'rgba(30, 41, 59, 0.7)', // Glassmorphism base
     text: '#F8FAFC',
     textMuted: '#94A3B8',
-    border: '#334155',
-    inputBg: '#0F172A',
+    border: 'rgba(51, 65, 85, 0.5)',
+    inputBg: 'rgba(15, 23, 42, 0.5)',
     error: '#EF4444',
     success: '#22C55E',
+    glows: {
+      indigo: 'rgba(79, 70, 229, 0.3)',
+      purple: 'rgba(139, 92, 246, 0.3)',
+      cyan: 'rgba(6, 182, 212, 0.3)',
+    },
   },
 };
 
@@ -45,25 +57,25 @@ export const SPACING = {
 export const BORDER_RADIUS = {
   sm: 8,
   md: 12,
-  lg: 16,
-  xl: 24,
+  lg: 20, // 20-28px rounded corners
+  xl: 28,
   round: 9999,
 };
 
 export const SHADOWS = {
   light: {
-    shadowColor: '#64748B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 8,
   },
   dark: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 12,
   },
 };
 
@@ -80,7 +92,7 @@ export const TYPOGRAPHY = {
     lg: 18,
     xl: 24,
     xxl: 32,
-    h1: 36,
+    h1: 38,
   },
 };
 

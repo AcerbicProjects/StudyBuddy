@@ -3,8 +3,11 @@ import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity, Anima
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useTheme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AuthStackParamList } from './SplashScreen';
 import ThemeToggle from '../../components/auth/ThemeToggle';
+import IllustrationContainer from '../../components/auth/IllustrationContainer';
+import GlassCard from '../../components/auth/GlassCard';
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,93 +15,104 @@ interface Slide {
   id: number;
   title: string;
   description: string;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  color: string;
-  illustration: () => React.ReactNode;
+  illustrationType: 'documents' | 'brain' | 'analytics';
+  floatingCard: () => React.ReactNode;
+  themeColor: string;
+  blobColor: string;
 }
 
 export const OnboardingScreen = () => {
-  const { colors, spacing, borderRadius, typography } = useTheme();
+  const { colors, spacing, borderRadius, typography, shadows } = useTheme();
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Custom visual components for illustrations to look premium
-  const renderDocumentIllustration = () => (
-    <View style={styles.illustrationWrapper}>
-      <View style={[styles.illBackground, { backgroundColor: 'rgba(79, 70, 229, 0.1)' }]} />
-      {/* Visual metaphor: document stack with upload arrow */}
-      <View style={[styles.docCard, styles.docCardBack]} />
-      <View style={[styles.docCard, styles.docCardMid]} />
-      <View style={[styles.docCard, styles.docCardFront, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <MaterialCommunityIcons name="file-document-outline" size={44} color="#4F46E5" />
-        <View style={[styles.uploadCircle, { backgroundColor: '#8B5CF6' }]}>
-          <MaterialCommunityIcons name="arrow-up" size={18} color="#FFFFFF" />
+  // Floating detail cards for each page to look Behance-like
+  const renderFloatingCard1 = () => (
+    <GlassCard style={styles.floatingCardOverlay}>
+      <View style={styles.floatingRow}>
+        <View style={[styles.miniCircle, { backgroundColor: '#4F46E5' }]}>
+          <MaterialCommunityIcons name="file-pdf-box" size={16} color="#FFFFFF" />
+        </View>
+        <View style={styles.miniTextWrapper}>
+          <Text style={[styles.miniTitle, { color: colors.text }]}>Lecture_Notes.pdf</Text>
+          <Text style={[styles.miniSubtitle, { color: colors.textMuted }]}>Upload Complete • 4.2 MB</Text>
         </View>
       </View>
-    </View>
+      {/* Mini mock progress bar */}
+      <View style={[styles.miniProgressContainer, { backgroundColor: colors.border }]}>
+        <View style={[styles.miniProgressBar, { backgroundColor: '#22C55E', width: '100%' }]} />
+      </View>
+    </GlassCard>
   );
 
-  const renderAIIllustration = () => (
-    <View style={styles.illustrationWrapper}>
-      <View style={[styles.illBackground, { backgroundColor: 'rgba(139, 92, 246, 0.1)' }]} />
-      {/* Visual metaphor: glowing AI core with sparkles and chips */}
-      <View style={[styles.aiCoreGlow, { backgroundColor: 'rgba(139, 92, 246, 0.2)' }]} />
-      <View style={[styles.aiCore, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <MaterialCommunityIcons name="brain" size={48} color="#8B5CF6" />
+  const renderFloatingCard2 = () => (
+    <GlassCard style={styles.floatingCardOverlay}>
+      <View style={styles.floatingRow}>
+        <View style={[styles.miniCircle, { backgroundColor: '#8B5CF6' }]}>
+          <MaterialCommunityIcons name="lightning-bolt" size={16} color="#FFFFFF" />
+        </View>
+        <View style={styles.miniTextWrapper}>
+          <Text style={[styles.miniTitle, { color: colors.text }]}>AI Flashcards</Text>
+          <Text style={[styles.miniSubtitle, { color: colors.textMuted }]}>48 questions generated</Text>
+        </View>
       </View>
-      <View style={[styles.sparkleItem, styles.sparkleLeft]}>
-        <MaterialCommunityIcons name={"sparkles" as any} size={20} color="#22C55E" />
+      {/* Tags */}
+      <View style={styles.tagRow}>
+        <View style={[styles.tag, { backgroundColor: 'rgba(34, 197, 94, 0.1)' }]}>
+          <Text style={[styles.tagText, { color: '#22C55E' }]}>Active Recall</Text>
+        </View>
+        <View style={[styles.tag, { backgroundColor: 'rgba(139, 92, 246, 0.1)' }]}>
+          <Text style={[styles.tagText, { color: '#8B5CF6' }]}>AI Quiz</Text>
+        </View>
       </View>
-      <View style={[styles.sparkleItem, styles.sparkleRight]}>
-        <MaterialCommunityIcons name="lightning-bolt" size={20} color="#F59E0B" />
-      </View>
-    </View>
+    </GlassCard>
   );
 
-  const renderProgressIllustration = () => (
-    <View style={styles.illustrationWrapper}>
-      <View style={[styles.illBackground, { backgroundColor: 'rgba(34, 197, 94, 0.1)' }]} />
-      {/* Visual metaphor: stats graph and checklist */}
-      <View style={[styles.statsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={styles.statsBarRow}>
-          <View style={[styles.statsBar, { height: 30, backgroundColor: '#E2E8F0' }]} />
-          <View style={[styles.statsBar, { height: 50, backgroundColor: '#8B5CF6' }]} />
-          <View style={[styles.statsBar, { height: 75, backgroundColor: '#22C55E' }]} />
-          <View style={[styles.statsBar, { height: 60, backgroundColor: '#4F46E5' }]} />
+  const renderFloatingCard3 = () => (
+    <GlassCard style={styles.floatingCardOverlay}>
+      <View style={styles.floatingRow}>
+        <View style={[styles.miniCircle, { backgroundColor: '#22C55E' }]}>
+          <MaterialCommunityIcons name="trophy-outline" size={16} color="#FFFFFF" />
         </View>
-        <View style={styles.statsMarker}>
-          <MaterialCommunityIcons name="trending-up" size={24} color="#22C55E" />
+        <View style={styles.miniTextWrapper}>
+          <Text style={[styles.miniTitle, { color: colors.text }]}>Daily Growth</Text>
+          <Text style={[styles.miniSubtitle, { color: colors.textMuted }]}>Weekly Goal reached!</Text>
         </View>
       </View>
-    </View>
+      <Text style={[styles.statHighlight, { color: '#22C55E' }]}>+24% Recall Retention</Text>
+    </GlassCard>
   );
 
   const slides: Slide[] = [
     {
       id: 1,
       title: 'Study Smarter',
-      description: 'Upload notes, PDFs and lecture slides effortlessly.',
-      icon: 'file-document-outline',
-      color: '#4F46E5',
-      illustration: renderDocumentIllustration,
+      description: 'Upload lecture slides and handwritten notes effortlessly.',
+      illustrationType: 'documents',
+      floatingCard: renderFloatingCard1,
+      themeColor: '#4F46E5',
+      blobColor: 'rgba(79, 70, 229, 0.2)',
     },
     {
       id: 2,
-      title: 'Learn with AI',
-      description: 'Generate summaries, quizzes, flashcards and viva questions instantly.',
-      icon: 'brain',
-      color: '#8B5CF6',
-      illustration: renderAIIllustration,
+      title: 'Powered by AI',
+      description: 'Generate summaries, flashcards, quizzes and viva questions instantly.',
+      illustrationType: 'brain',
+      floatingCard: renderFloatingCard2,
+      themeColor: '#8B5CF6',
+      blobColor: 'rgba(139, 92, 246, 0.2)',
     },
     {
       id: 3,
-      title: 'Track Your Progress',
-      description: 'Monitor weak topics and get personalized revision reminders.',
-      icon: 'trending-up',
-      color: '#22C55E',
-      illustration: renderProgressIllustration,
+      title: 'Track Your Growth',
+      description: 'See analytics, weak topics and smart revision reminders.',
+      illustrationType: 'analytics',
+      floatingCard: renderFloatingCard3,
+      themeColor: '#22C55E',
+      blobColor: 'rgba(34, 197, 94, 0.2)',
     },
   ];
 
@@ -115,7 +129,7 @@ export const OnboardingScreen = () => {
         animated: true,
       });
     } else {
-      handleGetStarted();
+      navigation.navigate('Login');
     }
   };
 
@@ -123,11 +137,7 @@ export const OnboardingScreen = () => {
     navigation.navigate('Login');
   };
 
-  const handleGetStarted = () => {
-    navigation.navigate('Login');
-  };
-
-  // Indicators mapping
+  // Dot indicator animations
   const renderDots = () => {
     return (
       <View style={styles.indicatorContainer}>
@@ -136,13 +146,13 @@ export const OnboardingScreen = () => {
           
           const dotWidth = scrollX.interpolate({
             inputRange,
-            outputRange: [8, 24, 8],
+            outputRange: [8, 26, 8],
             extrapolate: 'clamp',
           });
 
           const opacity = scrollX.interpolate({
             inputRange,
-            outputRange: [0.4, 1, 0.4],
+            outputRange: [0.3, 1, 0.3],
             extrapolate: 'clamp',
           });
 
@@ -171,7 +181,32 @@ export const OnboardingScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <LinearGradient
+      colors={colors.backgroundGradient}
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      {/* Mesh Blob behind illustration */}
+      {slides.map((slide, index) => {
+        const opacity = scrollX.interpolate({
+          inputRange: [(index - 1) * width, index * width, (index + 1) * width],
+          outputRange: [0, 0.45, 0],
+          extrapolate: 'clamp',
+        });
+
+        return (
+          <Animated.View
+            key={slide.id}
+            style={[
+              styles.meshBlob,
+              {
+                backgroundColor: slide.themeColor,
+                opacity,
+              },
+            ]}
+          />
+        );
+      })}
+
       {/* Header controls: Theme toggle */}
       <View style={styles.header}>
         <ThemeToggle />
@@ -192,12 +227,17 @@ export const OnboardingScreen = () => {
         {slides.map((slide) => (
           <View key={slide.id} style={styles.slideWidth}>
             <View style={styles.slideContainer}>
-              {/* Premium abstract illustration */}
-              {slide.illustration()}
+              {/* Layered illustration area with floating cards */}
+              <View style={styles.illustrationWrapper}>
+                <IllustrationContainer type={slide.illustrationType} size={220} />
+                
+                {/* Layered floating info card overlay */}
+                {slide.floatingCard()}
+              </View>
 
               {/* Text content */}
               <View style={styles.textWrapper}>
-                <Text style={[styles.title, { color: colors.text, fontSize: typography.fontSize.xl }]}>
+                <Text style={[styles.title, { color: colors.text, fontSize: typography.fontSize.xl + 4 }]}>
                   {slide.title}
                 </Text>
                 <Text style={[styles.description, { color: colors.textMuted, fontSize: typography.fontSize.md }]}>
@@ -209,7 +249,7 @@ export const OnboardingScreen = () => {
         ))}
       </ScrollView>
 
-      {/* Navigation Footer */}
+      {/* Footer Navigation */}
       <View style={[styles.footer, { paddingBottom: spacing.xl }]}>
         {renderDots()}
 
@@ -234,7 +274,7 @@ export const OnboardingScreen = () => {
             </>
           ) : (
             <TouchableOpacity
-              onPress={handleGetStarted}
+              onPress={handleNext}
               style={[styles.getStartedButton, { backgroundColor: colors.primary, borderRadius: borderRadius.lg }]}
             >
               <Text style={[styles.getStartedText, { fontSize: typography.fontSize.md }]}>
@@ -245,23 +285,35 @@ export const OnboardingScreen = () => {
           )}
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  meshBlob: {
+    position: 'absolute',
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    filter: 'blur(45px)',
+    top: height * 0.18,
+    alignSelf: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingHorizontal: 24,
     paddingTop: 50,
-    zIndex: 10,
+    zIndex: 20,
   },
   scrollView: {
     flex: 1,
+    zIndex: 10,
   },
   slideWidth: {
     width: width,
@@ -273,137 +325,85 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   illustrationWrapper: {
-    width: 220,
-    height: 220,
+    width: 250,
+    height: 250,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    marginBottom: 40,
+    marginBottom: 48,
   },
-  illBackground: {
+  floatingCardOverlay: {
     position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-  },
-  docCard: {
-    position: 'absolute',
-    width: 100,
-    height: 140,
-    borderRadius: 16,
-    borderWidth: 1.5,
-  },
-  docCardBack: {
-    backgroundColor: '#E2E8F0',
-    borderColor: '#CBD5E1',
-    transform: [{ rotate: '-12deg' }, { translateX: -15 }],
-    opacity: 0.5,
-  },
-  docCardMid: {
-    backgroundColor: '#EEF2F6',
-    borderColor: '#E2E8F0',
-    transform: [{ rotate: '-6deg' }, { translateX: -5 }],
-    opacity: 0.8,
-  },
-  docCardFront: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  uploadCircle: {
-    position: 'absolute',
-    bottom: -10,
+    bottom: -15,
     right: -10,
-    width: 32,
-    height: 32,
+    width: 200,
+    padding: 12,
+    borderWidth: 1,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
   },
-  aiCoreGlow: {
-    position: 'absolute',
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-  },
-  aiCore: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  sparkleItem: {
-    position: 'absolute',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sparkleLeft: {
-    top: 30,
-    left: 20,
-  },
-  sparkleRight: {
-    bottom: 30,
-    right: 20,
-  },
-  statsCard: {
-    width: 160,
-    height: 120,
-    borderRadius: 16,
-    padding: 16,
-    justifyContent: 'flex-end',
-    borderWidth: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  statsBarRow: {
+  floatingRow: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    height: 80,
+    alignItems: 'center',
+    marginBottom: 6,
   },
-  statsBar: {
-    width: 18,
+  miniCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  miniTextWrapper: {
+    flex: 1,
+  },
+  miniTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  miniSubtitle: {
+    fontSize: 9,
+    fontWeight: '500',
+  },
+  miniProgressContainer: {
+    width: '100%',
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
+    marginTop: 6,
+  },
+  miniProgressBar: {
+    height: '100%',
+  },
+  tagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  tag: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
     borderRadius: 4,
+    marginRight: 6,
   },
-  statsMarker: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
+  tagText: {
+    fontSize: 8,
+    fontWeight: '700',
+  },
+  statHighlight: {
+    fontSize: 10,
+    fontWeight: '700',
+    marginTop: 4,
   },
   textWrapper: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 16,
   },
   title: {
-    fontWeight: '800',
+    fontWeight: '900',
     textAlign: 'center',
     marginBottom: 12,
+    letterSpacing: -0.5,
   },
   description: {
     fontWeight: '400',
@@ -413,6 +413,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: 32,
     alignItems: 'center',
+    zIndex: 20,
   },
   indicatorContainer: {
     flexDirection: 'row',
@@ -437,23 +438,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   skipText: {
-    fontWeight: '600',
+    fontWeight: '700',
   },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
     height: '100%',
-    paddingHorizontal: 24,
+    paddingHorizontal: 26,
     justifyContent: 'center',
     shadowColor: '#4F46E5',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   nextText: {
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontWeight: '700',
     marginRight: 8,
   },
   getStartedButton: {
@@ -463,14 +464,14 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     shadowColor: '#4F46E5',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   getStartedText: {
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontWeight: '700',
     marginRight: 8,
   },
   rocketIcon: {
