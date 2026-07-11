@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useTheme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AuthStackParamList } from './SplashScreen';
 
 // Import Reusable Components
@@ -11,6 +12,10 @@ import AuthInput from '../../components/auth/AuthInput';
 import LoadingButton from '../../components/auth/LoadingButton';
 import ThemeToggle from '../../components/auth/ThemeToggle';
 import ErrorSnackbar from '../../components/auth/ErrorSnackbar';
+import IllustrationContainer from '../../components/auth/IllustrationContainer';
+import GlassCard from '../../components/auth/GlassCard';
+
+const { width, height } = Dimensions.get('window');
 
 export const ForgotPasswordScreen = () => {
   const { colors, spacing, borderRadius, typography, shadows } = useTheme();
@@ -57,7 +62,6 @@ export const ForgotPasswordScreen = () => {
 
     setIsLoading(true);
 
-    // Simulate Reset link trigger API
     setTimeout(() => {
       setIsLoading(false);
 
@@ -76,6 +80,41 @@ export const ForgotPasswordScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
+      <LinearGradient
+        colors={colors.backgroundGradient}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Abstract Glowing Mesh Blobs */}
+      <View
+        style={[
+          styles.glowBlob,
+          {
+            backgroundColor: '#8B5CF6',
+            width: width * 0.7,
+            height: width * 0.7,
+            borderRadius: (width * 0.7) / 2,
+            top: height * 0.1,
+            right: -40,
+            opacity: colors.glows.purple.includes('0.3') ? 0.2 : 0.1,
+          },
+        ]}
+      />
+      <View
+        style={[
+          styles.glowBlob,
+          {
+            backgroundColor: '#06B6D4',
+            width: width * 0.7,
+            height: width * 0.7,
+            borderRadius: (width * 0.7) / 2,
+            bottom: height * 0.15,
+            left: -40,
+            opacity: colors.glows.cyan.includes('0.3') ? 0.2 : 0.1,
+          },
+        ]}
+      />
+
       <View style={styles.themeToggleWrapper}>
         <ThemeToggle />
       </View>
@@ -83,46 +122,54 @@ export const ForgotPasswordScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {!isSubmitted ? (
           <>
-            <AuthHeader
-              title="Reset Password"
-              subtitle="Enter your email to receive a password recovery link"
-              onBackPress={() => navigation.navigate('Login')}
-            />
-
-            <View style={styles.formContainer}>
-              <AuthInput
-                label="Email Address"
-                placeholder="e.g. student@university.edu"
-                value={email}
-                onChangeText={validateEmail}
-                error={emailError}
-                isValid={isEmailValid}
-                iconName="email-outline"
-                keyboardType="email-address"
-              />
-
-              <LoadingButton
-                title="Send Reset Link"
-                onPress={handleSendLink}
-                isLoading={isLoading}
-                style={styles.submitButton}
-              />
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Login')}
-                style={styles.backLink}
-                activeOpacity={0.7}
-              >
-                <MaterialCommunityIcons name="arrow-left" size={16} color={colors.primary} style={styles.backIcon} />
-                <Text style={[styles.backLinkText, { color: colors.primary, fontSize: typography.fontSize.sm }]}>
-                  Back to Sign In
-                </Text>
-              </TouchableOpacity>
+            {/* Header Illustration */}
+            <View style={styles.heroSection}>
+              <IllustrationContainer type="scan" size={170} />
             </View>
+
+            {/* Glassmorphism Centered Card */}
+            <GlassCard style={styles.card}>
+              <AuthHeader
+                title="Reset Password"
+                subtitle="Enter your email to receive a password recovery link"
+                onBackPress={() => navigation.navigate('Login')}
+              />
+
+              <View style={styles.formContainer}>
+                <AuthInput
+                  label="Email Address"
+                  placeholder="student@university.edu"
+                  value={email}
+                  onChangeText={validateEmail}
+                  error={emailError}
+                  isValid={isEmailValid}
+                  iconName="email-outline"
+                  keyboardType="email-address"
+                />
+
+                <LoadingButton
+                  title="Send Reset Link"
+                  onPress={handleSendLink}
+                  isLoading={isLoading}
+                  style={styles.submitButton}
+                />
+
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Login')}
+                  style={styles.backLink}
+                  activeOpacity={0.7}
+                >
+                  <MaterialCommunityIcons name="arrow-left" size={16} color={colors.primary} style={styles.backIcon} />
+                  <Text style={[styles.backLinkText, { color: colors.primary, fontSize: typography.fontSize.sm }]}>
+                    Back to Sign In
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </GlassCard>
           </>
         ) : (
           <View style={styles.successContainer}>
-            <View style={[styles.successCard, shadows, { backgroundColor: colors.card, borderRadius: borderRadius.xl }]}>
+            <GlassCard style={[styles.successCard, shadows]}>
               {/* Success Badge */}
               <View style={[styles.successIconWrapper, { backgroundColor: 'rgba(34, 197, 94, 0.1)' }]}>
                 <MaterialCommunityIcons name="email-check-outline" size={48} color={colors.success} />
@@ -155,7 +202,7 @@ export const ForgotPasswordScreen = () => {
                   <Text style={{ color: colors.primary, fontWeight: '700' }}>Try again</Text>
                 </Text>
               </TouchableOpacity>
-            </View>
+            </GlassCard>
           </View>
         )}
       </ScrollView>
@@ -174,18 +221,35 @@ export const ForgotPasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
+  },
+  glowBlob: {
+    position: 'absolute',
+    filter: 'blur(45px)',
   },
   themeToggleWrapper: {
     position: 'absolute',
     top: 50,
     right: 24,
-    zIndex: 10,
+    zIndex: 20,
   },
   scrollContainer: {
     paddingHorizontal: 24,
-    paddingTop: 100,
+    paddingTop: 80,
     paddingBottom: 40,
     flexGrow: 1,
+  },
+  heroSection: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  card: {
+    borderWidth: 1,
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 8,
   },
   formContainer: {
     width: '100%',
@@ -210,6 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingTop: 40,
   },
   successCard: {
     width: '100%',
@@ -217,7 +282,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'transparent',
   },
   successIconWrapper: {
     width: 90,
@@ -228,7 +292,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   successTitle: {
-    fontWeight: '800',
+    fontWeight: '900',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -246,7 +310,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   resendText: {
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });
 export default ForgotPasswordScreen;

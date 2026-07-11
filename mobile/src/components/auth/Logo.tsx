@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { useTheme } from '../../constants/theme';
-
-// We import MaterialCommunityIcons from expo vector icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface LogoProps {
@@ -12,49 +10,111 @@ interface LogoProps {
 
 export const Logo: React.FC<LogoProps> = ({ size = 'small', animated = true }) => {
   const { colors, typography, spacing } = useTheme();
+
+  // Animations
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (animated) {
+      // Pulse animation
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.1,
-            duration: 1200,
+            toValue: 1.08,
+            duration: 1500,
+            easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1200,
+            duration: 1500,
+            easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
         ])
       ).start();
+
+      // Continuous rotation
+      Animated.loop(
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 8000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      ).start();
     }
-  }, [animated, pulseAnim]);
+  }, [animated, pulseAnim, rotateAnim]);
 
   const isLarge = size === 'large';
   const iconSize = isLarge ? 64 : 32;
 
+  // Interpolate rotation
+  const spinClockwise = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  const spinCounterClockwise = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['360deg', '0deg'],
+  });
+
   return (
     <View style={styles.container}>
-      <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-        <View style={[styles.iconContainer, { backgroundColor: colors.card }]}>
-          {/* Graduation cap and lightbulb/sparkle metaphor */}
-          <MaterialCommunityIcons 
-            name="school-outline" 
-            size={iconSize} 
-            color="#4F46E5" 
+      <View style={styles.logoBadgeContainer}>
+        {/* Animated outer dashed orbit ring */}
+        {animated && (
+          <Animated.View
+            style={[
+              styles.orbitRing,
+              {
+                width: iconSize * 2,
+                height: iconSize * 2,
+                borderRadius: iconSize,
+                borderColor: '#8B5CF6',
+                transform: [{ rotate: spinClockwise }],
+              },
+            ]}
           />
-          <View style={styles.sparklePosition}>
+        )}
+
+        {/* Animated inner dashed orbit ring */}
+        {animated && (
+          <Animated.View
+            style={[
+              styles.orbitRing,
+              styles.orbitRingInner,
+              {
+                width: iconSize * 1.6,
+                height: iconSize * 1.6,
+                borderRadius: iconSize * 0.8,
+                borderColor: '#06B6D4',
+                transform: [{ rotate: spinCounterClockwise }],
+              },
+            ]}
+          />
+        )}
+
+        {/* Central pulsing core badge */}
+        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+          <View style={[styles.iconContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <MaterialCommunityIcons 
-              name={"sparkles" as any} 
-              size={iconSize * 0.4} 
-              color="#8B5CF6" 
+              name="school-outline" 
+              size={iconSize} 
+              color="#4F46E5" 
             />
+            <View style={styles.sparklePosition}>
+              <MaterialCommunityIcons 
+                name={"sparkles" as any} 
+                size={iconSize * 0.4} 
+                color="#8B5CF6" 
+              />
+            </View>
           </View>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </View>
       
       <Text style={[
         styles.title, 
@@ -75,11 +135,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  logoBadgeContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  orbitRing: {
+    position: 'absolute',
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    opacity: 0.4,
+  },
+  orbitRingInner: {
+    borderStyle: 'dotted',
+    opacity: 0.6,
+  },
   iconContainer: {
-    width: 'auto',
-    height: 'auto',
     padding: 16,
     borderRadius: 24,
+    borderWidth: 1,
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
@@ -95,8 +169,8 @@ const styles = StyleSheet.create({
     right: 6,
   },
   title: {
-    fontWeight: '800',
-    letterSpacing: -0.5,
+    fontWeight: '900',
+    letterSpacing: -0.8,
   },
 });
 export default Logo;

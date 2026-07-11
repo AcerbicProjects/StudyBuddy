@@ -37,23 +37,40 @@ export const AuthInput: React.FC<AuthInputProps> = ({
 
   // Border and background state styling
   let borderColor = colors.border;
+  let activeShadow = {};
+
   if (error) {
     borderColor = colors.error;
+    activeShadow = {
+      shadowColor: colors.error,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 3,
+    };
   } else if (isFocused) {
-    borderColor = colors.primary;
+    borderColor = '#8B5CF6'; // Purple highlight
+    activeShadow = {
+      shadowColor: '#8B5CF6',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.25,
+      shadowRadius: 10,
+      elevation: 4,
+    };
   }
 
   return (
     <View style={[styles.container, style]}>
-      {label && (
+      {label ? (
         <Text style={[styles.label, { color: colors.text, fontSize: typography.fontSize.sm }]}>
           {label}
         </Text>
-      )}
+      ) : null}
       
       <View
         style={[
           styles.inputContainer,
+          activeShadow,
           {
             backgroundColor: colors.inputBg,
             borderColor: borderColor,
@@ -62,14 +79,14 @@ export const AuthInput: React.FC<AuthInputProps> = ({
           },
         ]}
       >
-        {iconName && (
+        {iconName ? (
           <MaterialCommunityIcons
             name={iconName}
             size={20}
-            color={error ? colors.error : isFocused ? colors.primary : colors.textMuted}
+            color={error ? colors.error : isFocused ? '#8B5CF6' : colors.textMuted}
             style={styles.icon}
           />
-        )}
+        ) : null}
         
         <TextInput
           placeholderTextColor={colors.textMuted}
@@ -89,30 +106,28 @@ export const AuthInput: React.FC<AuthInputProps> = ({
         {rightAccessory}
 
         {/* Validation indicators */}
-        {error && (
+        {error ? (
           <MaterialCommunityIcons
             name="alert-circle-outline"
             size={20}
             color={colors.error}
             style={styles.rightIcon}
           />
-        )}
-        
-        {!error && isValid && (
+        ) : isValid ? (
           <MaterialCommunityIcons
             name="check-circle"
             size={20}
             color={colors.success}
             style={styles.rightIcon}
           />
-        )}
+        ) : null}
       </View>
       
-      {error && (
+      {error ? (
         <Text style={[styles.errorText, { color: colors.error, fontSize: typography.fontSize.xs }]}>
           {error}
         </Text>
-      )}
+      ) : null}
     </View>
   );
 };
@@ -120,20 +135,22 @@ export const AuthInput: React.FC<AuthInputProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   label: {
     fontWeight: '600',
-    marginBottom: 6,
+    marginBottom: 8,
+    letterSpacing: 0.2,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
-    paddingHorizontal: 12,
+    height: 54,
+    paddingHorizontal: 16,
+    borderWidth: 1,
   },
   icon: {
-    marginRight: 10,
+    marginRight: 12,
   },
   textInput: {
     flex: 1,
@@ -141,10 +158,10 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   rightIcon: {
-    marginLeft: 8,
+    marginLeft: 10,
   },
   errorText: {
-    marginTop: 4,
+    marginTop: 6,
     fontWeight: '500',
   },
 });
