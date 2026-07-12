@@ -11,6 +11,7 @@ export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   ForgotPassword: undefined;
+  Main: undefined;
 };
 
 const { width, height } = Dimensions.get('window');
@@ -18,7 +19,7 @@ const { width, height } = Dimensions.get('window');
 export const SplashScreen = () => {
   const { colors, typography, spacing } = useTheme();
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
-  
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -105,23 +106,23 @@ export const SplashScreen = () => {
         <Logo size="large" animated={true} />
 
         {/* Animated taglines */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.textBlock,
-            { 
-              opacity: fadeAnim, 
-              transform: [{ translateY: slideAnim }] 
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
             }
           ]}
         >
           <Text style={[styles.tagline, { color: colors.textMuted, fontSize: typography.fontSize.md }]}>
             "Transform Your Notes Into Knowledge"
           </Text>
-          
-          <ActivityIndicator 
-            size="small" 
-            color="#8B5CF6" 
-            style={[styles.loader, { marginTop: spacing.xl }]} 
+
+          <ActivityIndicator
+            size="small"
+            color="#8B5CF6"
+            style={[styles.loader, { marginTop: spacing.xl }]}
           />
         </Animated.View>
       </View>
