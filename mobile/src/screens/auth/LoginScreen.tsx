@@ -84,7 +84,7 @@ export const LoginScreen = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-      
+
       if (email.toLowerCase() === 'error@studybuddy.com') {
         setSnackbarType('error');
         setSnackbarMessage('Invalid email or password. Please try again.');
@@ -93,10 +93,13 @@ export const LoginScreen = () => {
         setSnackbarType('success');
         setSnackbarMessage('Successfully logged in! Welcome back.');
         setSnackbarVisible(true);
-        setEmail('');
-        setPassword('');
-        setIsEmailValid(false);
-        setIsPasswordValid(false);
+        setTimeout(() => {
+          setEmail('');
+          setPassword('');
+          setIsEmailValid(false);
+          setIsPasswordValid(false);
+          navigation.navigate('Main');
+        }, 1000);
       }
     }, 2000);
   };
