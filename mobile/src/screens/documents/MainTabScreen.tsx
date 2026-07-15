@@ -12,12 +12,19 @@ import BottomNavBar from '../../components/documents/BottomNavBar';
 import FloatingUploadButton from '../../components/documents/FloatingUploadButton';
 import DocumentDetailScreen from './DocumentDetailScreen';
 
+import DashboardScreen from '../dashboard/DashboardScreen';
+import AnalyticsScreen from '../dashboard/AnalyticsScreen';
+import WeakTopicsScreen from '../dashboard/WeakTopicsScreen';
+import StudyPlannerScreen from '../dashboard/StudyPlannerScreen';
+import NotificationsScreen from '../dashboard/NotificationsScreen';
+
 export const MainTabScreen: React.FC = () => {
     const { colors, typography, borderRadius } = useTheme();
     const insets = useSafeAreaInsets();
 
     const [activeTab, setActiveTab] = useState('Home');
     const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
+    const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
     // Navigations helper inside tabs
     const handleSelectDocument = (docId: string) => {
@@ -39,6 +46,30 @@ export const MainTabScreen: React.FC = () => {
             );
         }
 
+        if (activeSubScreen !== null) {
+            switch (activeSubScreen) {
+                case 'WeakTopics':
+                    return (
+                        <WeakTopicsScreen
+                            onBack={() => setActiveSubScreen(null)}
+                            onNavigateToTab={(tab) => {
+                                setActiveTab(tab);
+                                setActiveSubScreen(null);
+                            }}
+                        />
+                    );
+                case 'StudyPlanner':
+                    return <StudyPlannerScreen onBack={() => setActiveSubScreen(null)} />;
+                case 'Notifications':
+                    return <NotificationsScreen onBack={() => setActiveSubScreen(null)} />;
+                case 'Analytics':
+                case 'ProgressHistory':
+                    return <AnalyticsScreen onBack={() => setActiveSubScreen(null)} />;
+                default:
+                    break;
+            }
+        }
+
         switch (activeTab) {
             case 'Home':
                 return (
@@ -58,7 +89,16 @@ export const MainTabScreen: React.FC = () => {
             case 'Upload':
                 return <UploadScreen />;
             case 'Progress':
-                return renderProgressMock();
+                return (
+                    <DashboardScreen
+                        onNavigateToTab={(tab) => {
+                            setActiveTab(tab);
+                            setActiveSubScreen(null);
+                        }}
+                        onNavigateToSub={setActiveSubScreen}
+                        onSelectDocument={handleSelectDocument}
+                    />
+                );
             case 'Profile':
                 return renderProfileMock();
             default:
@@ -114,13 +154,13 @@ export const MainTabScreen: React.FC = () => {
             {/* Current Screen body */}
             {renderCurrentView()}
 
-            {/* Floating Upload button (always visible except in detailed view or upload page) */}
-            {selectedDocId === null && activeTab !== 'Upload' && (
+            {/* Floating Upload button (always visible except in detailed view, sub-dashboard screens or upload page) */}
+            {selectedDocId === null && activeSubScreen === null && activeTab !== 'Upload' && (
                 <FloatingUploadButton onPress={() => setActiveTab('Upload')} />
             )}
 
             {/* Floating custom bottom Navigation system */}
-            {selectedDocId === null && (
+            {selectedDocId === null && activeSubScreen === null && (
                 <BottomNavBar currentTab={activeTab} onTabChange={setActiveTab} />
             )}
         </View>

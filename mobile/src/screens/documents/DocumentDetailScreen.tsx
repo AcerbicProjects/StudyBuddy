@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     aiIconGradient: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     },
     aiCardText: {
         flex: 1,
