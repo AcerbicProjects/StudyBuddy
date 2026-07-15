@@ -14,10 +14,9 @@ import QuizScreen from '../screens/ai/QuizScreen';
 import QuizResultScreen from '../screens/ai/QuizResultScreen';
 import VivaScreen from '../screens/ai/VivaScreen';
 
-// AI Learning Module navigator (Person 3).
-// Self-contained for Week 1 — NOT yet wired into the app's root navigation.
-// Integration into MainTabScreen/AuthNavigator is a separate, agreed-upon step
-// in a later week so this module never touches other members' files.
+// AI Learning Module navigator.
+// Can be embedded inside other screens (e.g. DocumentDetailScreen) by passing
+// an optional `onBack` callback to enable returning to the parent view.
 
 const Stack = createNativeStackNavigator<AIStackParamList>();
 
@@ -37,15 +36,36 @@ const TOOLS: Tool[] = [
     { route: 'Viva', title: 'Viva Prep', subtitle: 'Practice for oral exams', icon: 'microphone-variant', color: '#22C55E' },
 ];
 
-// Entry hub for the AI tools generated from a document. Also doubles as the
-// isolated test launcher during Week 1.
-const AIHomeScreen: React.FC = () => {
+interface AIHomeScreenProps {
+    onBack?: () => void;
+}
+
+// Entry hub for the AI tools generated from a document.
+const AIHomeScreen: React.FC<AIHomeScreenProps> = ({ onBack }) => {
     const { colors, borderRadius, typography, shadows } = useTheme();
     const insets = useSafeAreaInsets();
     const navigation = useNavigation<NativeStackNavigationProp<AIStackParamList>>();
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+            {/* Back header — visible when embedded inside another screen */}
+            {onBack && (
+                <View style={[styles.backHeader, { borderBottomColor: colors.border }]}>
+                    <TouchableOpacity
+                        onPress={onBack}
+                        style={styles.backButton}
+                        accessibilityRole="button"
+                        accessibilityLabel="Go back"
+                    >
+                        <MaterialCommunityIcons name="arrow-left" size={24} color={colors.text} />
+                    </TouchableOpacity>
+                    <Text style={[styles.backHeaderTitle, { color: colors.text, fontSize: typography.fontSize.md }]}>
+                        AI Accelerator Tools
+                    </Text>
+                    <View style={styles.backButton} />
+                </View>
+            )}
+
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
@@ -58,7 +78,7 @@ const AIHomeScreen: React.FC = () => {
                         AI Study Tools
                     </Text>
                     <Text style={[styles.heroSub, { color: colors.textMuted }]}>
-                        Generated from Physics Notes Chapter 4
+                        Supercharge your learning with AI-powered tools
                     </Text>
                 </View>
 
@@ -95,7 +115,11 @@ const AIHomeScreen: React.FC = () => {
     );
 };
 
-export const AINavigator = () => {
+interface AINavigatorProps {
+    onBack?: () => void;
+}
+
+export const AINavigator: React.FC<AINavigatorProps> = ({ onBack }) => {
     return (
         <Stack.Navigator
             initialRouteName="AIHome"
@@ -104,7 +128,9 @@ export const AINavigator = () => {
                 animation: 'slide_from_right',
             }}
         >
-            <Stack.Screen name="AIHome" component={AIHomeScreen} />
+            <Stack.Screen name="AIHome">
+                {() => <AIHomeScreen onBack={onBack} />}
+            </Stack.Screen>
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Summary" component={SummaryScreen} />
             <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
@@ -118,6 +144,23 @@ export const AINavigator = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    backHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 8,
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    backHeaderTitle: {
+        fontWeight: '700',
     },
     hero: {
         alignItems: 'center',
